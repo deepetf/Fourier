@@ -1,0 +1,12 @@
+CREATE TABLE CB_STOCK_LINK (
+
+    
+    trade_date DATE,
+    code VARCHAR(10),
+    
+    stk_code VARCHAR(10),
+    conv_price FLOAT,
+
+    
+    PRIMARY KEY (code, trade_date) 
+);
