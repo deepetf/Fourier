@@ -4,8 +4,10 @@ CREATE TABLE CB_STOCK_LINK (
     trade_date DATE,
     code VARCHAR(10),
     
-    stk_code VARCHAR(10),
+    code_stk VARCHAR(10),
     conv_price FLOAT,
+    list_days INT,
+    is_call VARCHAR(50),
 
     
     PRIMARY KEY (code, trade_date) 

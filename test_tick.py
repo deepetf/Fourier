@@ -50,6 +50,15 @@ def tickdata_pre_process(df):
 
     return df
 
+def data_pre_process_1m(df):
+    df.index = df.index.rename('trade_time')
+    df['code'] = '123200.SZ'
+    df = df.drop(columns=[ 'settelementPrice'])
+    
+    df.reset_index(inplace=True)
+
+    return df
+
 def tickdata_check(df):
     
 
@@ -77,8 +86,8 @@ def tickdata_to_db(df_source):
     
     password = quote('Happy$4ever')
 
-    TABLE_NAME = 'CB_TICK'              # 您要插入数据的表名
-    CHUNK_SIZE = 1000                   # 每次插入的行数，可根据内存和网络情况调整
+    TABLE_NAME = 'CB_1M'              # 您要插入数据的表名
+    CHUNK_SIZE = 3000                   # 每次插入的行数，可根据内存和网络情况调整
 
 
     try:
@@ -188,10 +197,37 @@ def tickdata_to_db(df_source):
     conn.close()
     engine.dispose()
 
-xtdata.download_history_data("123200.SZ", 'tick', start_time='20230801', end_time='20250801')
-data = xtdata.get_market_data_ex([],['123200.SZ'], 'tick', "","")
-#data['123200.SZ'].to_excel('test_tick.xlsx')
+xtdata.download_history_data("123200.SZ", '1m', start_time='20230808', end_time='20250808')
+data = xtdata.get_market_data_ex([],['123200.SZ'], '1m', "","")
+data['123200.SZ'].to_excel('test_1m.xlsx')
 
 df = data['123200.SZ']
-df = tickdata_pre_process(df)
+
+def save_1m_data(df):
+
+    #NUC 使用
+    #host =  '192.168.8.78'    
+
+    #笔记本使用
+    host = 'www.deepweiqi.cn'
+
+    password = quote('Happy$4ever')
+    print("开始连接数据库...", host)
+    engine = create_engine(f'mysql+mysqlconnector://root:{password}@{host}:3306/KDATA')
+
+    conn = engine.connect()
+
+    TABLE_NAME = 'CB_1M'
+
+    df.to_sql(
+                    TABLE_NAME,
+                    conn,
+                    if_exists='append',
+                    index=False
+                )
+    
+df = data_pre_process_1m(df)
 tickdata_to_db(df)
+
+#df = tickdata_pre_process(df)
+#tickdata_to_db(df)

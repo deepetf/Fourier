@@ -1,0 +1,39 @@
+CREATE TABLE CB_TICK (
+
+    
+    code VARCHAR(10),
+    trade_time VARCHAR(20),
+
+    
+    time BIGINT,
+
+
+    lastPrice FLOAT,
+    open FLOAT,
+    high FLOAT,
+    low FLOAT,
+    lastClose FLOAT,
+
+
+    amount FLOAT,
+
+    volume BIGINT,
+    pvolume BIGINT,
+    tickvol BIGINT,
+
+    stockStatus INT,
+
+
+    askPrice VARCHAR(255),
+    bidPrice VARCHAR(255),
+    askVol VARCHAR(255),
+    bidVol VARCHAR(255),
+
+
+    transactionNum BIGINT,
+
+    pe FLOAT,
+
+    
+    PRIMARY KEY (code, trade_time) 
+);
