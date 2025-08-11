@@ -1,0 +1,30 @@
+CREATE TABLE STOCK_1M (
+
+    
+    code VARCHAR(10),
+    trade_time VARCHAR(20),
+
+    
+    time BIGINT,
+
+
+    open FLOAT,
+    high FLOAT,
+    low FLOAT,
+    close FLOAT,
+    preClose FLOAT,
+
+
+    amount FLOAT,
+
+    volume BIGINT,
+
+    -- 停牌 1停牌，0 不停牌
+    suspendFlag INT,
+
+    -- 持仓量
+    openInterest INT,
+
+    
+    PRIMARY KEY (code, trade_time) 
+);

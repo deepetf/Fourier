@@ -193,6 +193,31 @@ def save_cb_tick_1m_data(df, conn, period):
             df = data_pre_process_1m(df, cb_code)
         tick_1m_data_to_db(df, conn, period,'cb')
 
+
+def save_stock_tick_1m_data(df, conn, period):
+
+    # period 支持 'tick' 与 '1m'
+    end_date = df['trade_date'].max()
+    end_date = pd.to_datetime(end_date).strftime('%Y%m%d')
+    # 计算start_date为end_date之前一年，格式为字符串
+    start_date = (pd.to_datetime(end_date) - pd.DateOffset(years=1)).strftime('%Y%m%d')
+    start_date = (datetime.now().replace(year=datetime.now().year - 1)).strftime('%Y%m%d')
+
+    cs_link_df = df[df['trade_date'] == end_date]
+    stock_codes = cs_link_df['code_stk'].tolist()
+    for stock_code in stock_codes:
+        print(f"正在获取{stock_code}的{period}数据...")
+        xtdata.download_history_data(stock_code, period, start_time=start_date, end_time=end_date)
+        data = xtdata.get_market_data_ex([],[stock_code], period, "","")
+        #data['123200.SZ'].to_excel('test_tick.xlsx')
+        df = data[stock_code]
+        print(f"获取到{stock_code}的{period}数据，存入数据库...")
+        if period == 'tick':
+            df = data_pre_process_tick(df, stock_code)
+        elif period == '1m':
+            df = data_pre_process_1m(df, stock_code)
+        tick_1m_data_to_db(df, conn, period,'stock')        
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Save market data to DB')
     parser.add_argument('--contract', choices=['cb', 'stock'], default='cb', help='合约类型: cb 或 stock')
@@ -221,7 +246,9 @@ def main():
             df = get_cb_stock_link_df(conn)
             save_cb_tick_1m_data(df, conn, period)
         else:
-            print(f"[!] 合约类型 '{contract}' 的处理暂未实现，已跳过。")
+            df = get_cb_stock_link_df(conn)
+            save_stock_tick_1m_data(df, conn, period)
+            
     finally:
         conn.close()
         engine.dispose()
